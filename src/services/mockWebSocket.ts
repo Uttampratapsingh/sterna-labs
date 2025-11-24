@@ -28,28 +28,38 @@ class MockWebSocket {
 
   private startEmitting() {
     this.intervalId = setInterval(() => {
-      // Pick a random token from each category to update
+      const state = store.getState();
       const allTokens = [
         ...mockTokens.newPairs,
         ...mockTokens.finalStretch,
         ...mockTokens.migrated,
       ];
 
-      // Update 3 random tokens per tick
-      for (let i = 0; i < 3; i++) {
+      // Update 15 random tokens per tick for a "live" feel
+      for (let i = 0; i < 15; i++) {
         const randomToken = allTokens[Math.floor(Math.random() * allTokens.length)];
-        const currentPrice = parseFloat(randomToken.price.replace("$", ""));
-        const volatility = 0.05; // 5% volatility
-        const change = (Math.random() * volatility * 2) - volatility;
-        const newPrice = Math.max(0.01, currentPrice * (1 + change));
         
+        // Get current price from store or fallback to initial mock data
+        const storedData = state.market.prices[randomToken.id];
+        const currentPriceStr = storedData ? storedData.price : randomToken.price;
+        const currentPrice = parseFloat(currentPriceStr.replace(/[^0-9.]/g, ""));
+        
+        // 2% volatility per tick
+        const volatility = 0.02; 
+        const change = (Math.random() * volatility * 2) - volatility;
+        const newPrice = Math.max(0.000001, currentPrice * (1 + change));
+        
+        // Calculate new 1h change
+        const currentChange1h = storedData ? storedData.change1h : randomToken.change1h;
+        const newChange1h = currentChange1h + (change * 100);
+
         store.dispatch(updatePrice({
           id: randomToken.id,
-          price: `$${newPrice.toFixed(3)}`,
-          change1h: Number((randomToken.change1h + (change * 100)).toFixed(2))
+          price: `$${newPrice.toFixed(newPrice < 1 ? 6 : 3)}`,
+          change1h: Number(newChange1h.toFixed(2))
         }));
       }
-    }, 2000); // Update every 2 seconds
+    }, 800); // Update every 800ms
   }
 }
 

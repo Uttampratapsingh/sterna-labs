@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import { store } from "@/store";
 import { mockWebSocket } from "@/services/mockWebSocket";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -62,15 +63,17 @@ const AppContent = () => {
 
 const App = () => (
   <ErrorBoundary>
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <AppContent />
-        </TooltipProvider>
-      </QueryClientProvider>
-    </Provider>
+    <ThemeProvider defaultTheme="dark" storageKey="token-trading-theme">
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <AppContent />
+          </TooltipProvider>
+        </QueryClientProvider>
+      </Provider>
+    </ThemeProvider>
   </ErrorBoundary>
 );
 

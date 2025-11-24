@@ -6,18 +6,29 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { memo } from "react";
 
-export const PageHeader = () => {
+/**
+ * Page header component displaying page title and view controls
+ * Provides display options, sound toggle, and settings access
+ * Optimized with React.memo to prevent unnecessary re-renders
+ */
+export const PageHeader = memo(() => {
   return (
-    <div className="flex items-center justify-between px-4 py-4 border-b border-border bg-card/50">
+    <header className="flex items-center justify-between px-4 py-4 border-b border-border bg-card/50">
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-bold">Pulse</h1>
         <div className="flex items-center gap-2">
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+      <div className="flex items-center gap-2" role="toolbar" aria-label="View controls">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="text-muted-foreground hover:text-foreground"
+          aria-label="Information"
+        >
           <span className="text-sm">ⓘ</span>
         </Button>
 
@@ -40,14 +51,24 @@ export const PageHeader = () => {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="text-muted-foreground hover:text-foreground"
+          aria-label="Toggle sound"
+        >
           <Volume2 className="w-5 h-5" />
         </Button>
 
-        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="text-muted-foreground hover:text-foreground"
+          aria-label="Settings"
+        >
           <Settings className="w-5 h-5" />
         </Button>
       </div>
-    </div>
+    </header>
   );
-};
+});

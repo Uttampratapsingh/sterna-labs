@@ -4,9 +4,24 @@ import { parseCurrencyValue, parseAgeToSeconds } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 
+/**
+ * Available sorting options for token lists
+ */
 export type SortOption = "mc" | "age" | "volume" | "change";
+
+/**
+ * Sort direction: ascending or descending
+ */
 export type SortDirection = "asc" | "desc";
 
+/**
+ * Custom hook for filtering and sorting token lists
+ * Provides real-time filtering by keywords, protocols, and market cap range
+ * Integrates with Redux store for live price updates
+ * 
+ * @param tokens - Array of tokens to filter and sort
+ * @returns Filtered tokens array and control functions
+ */
 export function useTokenFilter(tokens: Token[]) {
   const [sortBy, setSortBy] = useState<SortOption>("mc");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");

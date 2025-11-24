@@ -2,8 +2,15 @@ import { Navigation } from "@/components/Navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { TokenColumn } from "@/components/TokenColumn";
 import { mockTokens } from "@/lib/mockData";
+import { memo } from "react";
 
-const Index = () => {
+/**
+ * Main index page component
+ * Displays three columns of tokens: New Pairs, Final Stretch, and Migrated
+ * Features real-time updates, filtering, and sorting capabilities
+ * Optimized with React.memo to prevent unnecessary re-renders
+ */
+const Index = memo(() => {
   return (
     <div className="flex flex-col h-screen bg-background overflow-hidden">
       <Navigation />
@@ -30,6 +37,6 @@ const Index = () => {
       </main>
     </div>
   );
-};
+});
 
 export default Index;

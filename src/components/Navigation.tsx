@@ -7,11 +7,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
+import { memo } from "react";
 
-export const Navigation = () => {
+/**
+ * Navigation item configuration
+ */
+interface NavItem {
+  label: string;
+  active: boolean;
+}
+
+/**
+ * Main navigation bar component
+ * Provides app-wide navigation, theme toggle, and utility actions
+ * Optimized with React.memo to prevent unnecessary re-renders
+ */
+export const Navigation = memo(() => {
   const { theme, setTheme } = useTheme();
   
-  const navItems = [
+  const navItems: NavItem[] = [
     { label: "Discover", active: false },
     { label: "Pulse", active: true },
     { label: "Trackers", active: false },
@@ -33,7 +47,7 @@ export const Navigation = () => {
             </div>
             
             {/* Nav Items */}
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-1" role="navigation" aria-label="Main navigation">
               {navItems.map((item) => (
                 <button
                   key={item.label}
@@ -42,6 +56,7 @@ export const Navigation = () => {
                       ? "text-primary bg-primary/10"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
+                  aria-current={item.active ? "page" : undefined}
                 >
                   {item.label}
                 </button>
@@ -51,7 +66,12 @@ export const Navigation = () => {
 
           {/* Right Section */}
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-muted-foreground hover:text-foreground"
+              aria-label="Search"
+            >
               <Search className="w-5 h-5" />
             </Button>
             
@@ -75,11 +95,21 @@ export const Navigation = () => {
               Deposit
             </Button>
 
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-muted-foreground hover:text-foreground"
+              aria-label="Notifications"
+            >
               <Bell className="w-5 h-5" />
             </Button>
 
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-muted-foreground hover:text-foreground"
+              aria-label="Wallet"
+            >
               <Wallet className="w-5 h-5" />
             </Button>
 
@@ -98,4 +128,4 @@ export const Navigation = () => {
       </div>
     </nav>
   );
-};
+});

@@ -3,7 +3,7 @@ import { TokenCard } from "./TokenCard";
 import { TokenCardSkeleton } from "./TokenCardSkeleton";
 import { ColumnFilters } from "./ColumnFilters";
 import { Token } from "@/lib/types";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Button } from "./ui/button";
 import { useTokenFilter } from "@/hooks/useTokenFilter";
 import {
@@ -13,13 +13,24 @@ import {
 } from "@/components/ui/popover";
 import { ARIA_LABELS } from "@/constants";
 
+/**
+ * Props for TokenColumn component
+ */
 interface TokenColumnProps {
+  /** Column title displayed in header */
   title: string;
+  /** Array of tokens to display */
   tokens: Token[];
+  /** Category for grouping and styling */
   category: "new" | "final" | "migrated";
 }
 
-export const TokenColumn = ({ title, tokens, category }: TokenColumnProps) => {
+/**
+ * Token column component displaying filtered and sortable token lists
+ * Features real-time filtering, sorting, and performance optimizations
+ * Uses React.memo to prevent unnecessary re-renders
+ */
+export const TokenColumn = memo(({ title, tokens, category }: TokenColumnProps) => {
   const [isLoading] = useState(false);
   
   const {
@@ -172,4 +183,4 @@ export const TokenColumn = ({ title, tokens, category }: TokenColumnProps) => {
       </div>
     </section>
   );
-};
+});

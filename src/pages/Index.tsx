@@ -58,7 +58,7 @@ const Index = memo(() => {
         />
       </div>
       
-      <main className="flex-1 min-h-0">
+      <main id="main-content" className="flex-1 min-h-0" tabIndex={-1}>
         {/* Desktop: Three columns */}
         <div className="hidden lg:grid h-full grid-cols-1 lg:grid-cols-3 gap-px bg-border">
           <TokenColumn

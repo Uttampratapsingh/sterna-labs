@@ -51,6 +51,10 @@ const App = () => (
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
+            {/* Skip to main content link for keyboard navigation */}
+            <a href="#main-content" className="skip-link">
+              Skip to main content
+            </a>
             <Toaster />
             <Sonner />
             <AppContent />

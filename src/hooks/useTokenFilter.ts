@@ -42,6 +42,11 @@ export function useTokenFilter(tokens: Token[]) {
     });
   }, [sortDirection]);
 
+  /**
+   * Memoized filtered and sorted tokens
+   * Only recalculates when dependencies change
+   * Performance: O(n log n) for sorting
+   */
   const filteredAndSortedTokens = useMemo(() => {
     let filtered = [...tokens];
 
@@ -108,7 +113,16 @@ export function useTokenFilter(tokens: Token[]) {
     });
 
     return filtered;
-  }, [tokens, sortBy, sortDirection, searchKeywords, selectedProtocols, minMC, maxMC, sortBy === "change" ? marketPrices : null]);
+  }, [
+    tokens,
+    sortBy,
+    sortDirection,
+    searchKeywords,
+    selectedProtocols,
+    minMC,
+    maxMC,
+    marketPrices
+  ]);
 
   return {
     sortBy,

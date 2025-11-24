@@ -9,6 +9,7 @@ import { store } from "@/store";
 import { mockWebSocket } from "@/services/mockWebSocket";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ScreenSkeleton } from "@/components/ScreenSkeleton";
 
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -23,25 +24,6 @@ const queryClient = new QueryClient({
   },
 });
 
-/**
- * Loading fallback component with accessibility
- * Displays during lazy-loaded route transitions
- */
-const LoadingFallback = () => (
-  <div 
-    className="flex items-center justify-center h-screen bg-background"
-    role="status"
-    aria-live="polite"
-    aria-label="Loading application"
-  >
-    <div className="text-center space-y-4">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-      <p className="text-muted-foreground font-medium">Loading...</p>
-      <p className="text-xs text-muted-foreground/60">Please wait while we prepare your experience</p>
-    </div>
-  </div>
-);
-
 const AppContent = () => {
   useEffect(() => {
     mockWebSocket.connect();
@@ -51,7 +33,7 @@ const AppContent = () => {
   return (
     <BrowserRouter>
       <ErrorBoundary>
-        <Suspense fallback={<LoadingFallback />}>
+        <Suspense fallback={<ScreenSkeleton />}>
           <Routes>
             <Route path="/" element={<Index />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

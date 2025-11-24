@@ -1,10 +1,12 @@
-import { Mountain, Search, Bell, Wallet, Moon, Sun } from "lucide-react";
+import { Mountain, Search, Bell, Wallet, Moon, Sun, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
 import { memo } from "react";
@@ -150,19 +152,66 @@ export const Navigation = memo(() => {
               <Search className="w-4 h-4 lg:w-5 lg:h-5" />
             </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground h-9 w-9 lg:h-10 lg:w-10 lg:hidden"
-              aria-label="Menu"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            </Button>
+            {/* Mobile Menu - Three dots with theme toggle */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground h-9 w-9 lg:hidden"
+                  aria-label="Menu"
+                >
+                  <MoreVertical className="w-5 h-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-popover border-border">
+                <DropdownMenuLabel>Settings</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                
+                {/* Theme Toggle in Menu */}
+                <DropdownMenuItem
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="cursor-pointer"
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span>Theme</span>
+                    <div className="flex items-center gap-2">
+                      {theme === "dark" ? (
+                        <>
+                          <Moon className="h-4 w-4" />
+                          <span className="text-xs text-muted-foreground">Dark</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sun className="h-4 w-4" />
+                          <span className="text-xs text-muted-foreground">Light</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator />
+                
+                <DropdownMenuItem>
+                  <Bell className="w-4 h-4 mr-2" />
+                  Notifications
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem>
+                  <Wallet className="w-4 h-4 mr-2" />
+                  Wallet
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator />
+                
+                <DropdownMenuItem>
+                  Settings
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
+            {/* Desktop Theme Toggle */}
             <Button
               variant="ghost"
               size="icon"

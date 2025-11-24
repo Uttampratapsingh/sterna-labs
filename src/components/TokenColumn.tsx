@@ -167,8 +167,8 @@ export const TokenColumn = memo(({ title, tokens, category }: TokenColumnProps) 
         <div className="space-y-3 pb-4" style={{ contentVisibility: "auto" }}>
           {isLoading
             ? Array.from({ length: 5 }).map((_, i) => <TokenCardSkeleton key={i} />)
-            : filteredAndSortedTokens.map((token) => (
-                <TokenCard key={token.id} token={token} />
+            : filteredAndSortedTokens.map((token, index) => (
+                <TokenCard key={token.id} token={token} priority={index < 3} />
               ))}
           {!isLoading && filteredAndSortedTokens.length === 0 && (
             <div 

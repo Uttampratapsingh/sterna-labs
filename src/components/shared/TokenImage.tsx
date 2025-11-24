@@ -8,6 +8,7 @@ interface TokenImageProps {
   size?: "sm" | "md" | "lg";
   className?: string;
   showOnlineIndicator?: boolean;
+  priority?: boolean;
 }
 
 const SIZE_CLASSES = {
@@ -23,6 +24,7 @@ export const TokenImage = memo(
     size = "md",
     className,
     showOnlineIndicator = true,
+    priority = false,
   }: TokenImageProps) => {
     return (
       <div className={cn("relative flex-shrink-0", className)}>
@@ -35,8 +37,9 @@ export const TokenImage = memo(
           <img
             src={src}
             alt={alt}
-            loading={IMAGE_CONFIG.LOADING as any}
+            loading={priority ? "eager" : (IMAGE_CONFIG.LOADING as any)}
             decoding={IMAGE_CONFIG.DECODING as any}
+            fetchPriority={priority ? "high" : undefined}
             className="w-full h-full object-cover"
             onError={(e) => {
               e.currentTarget.src = IMAGE_CONFIG.PLACEHOLDER;

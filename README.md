@@ -11,6 +11,20 @@ A high-performance, enterprise-grade cryptocurrency token tracking dashboard eng
 
 **Live Demo:** [https://sterna-labs.vercel.app](https://sterna-labs.vercel.app)
 
+## 📸 Screenshots
+
+### Desktop View
+![Desktop Dashboard](./docs/images/desktop-view.png)
+*Dashboard view showing all three token columns with filtering options.*
+
+### Mobile View
+<div style="display: flex; gap: 10px;">
+  <img src="./docs/images/mobile-view-1.png" alt="Mobile List" width="300" />
+  <img src="./docs/images/mobile-view-2.png" alt="Mobile Menu" width="300" />
+</div>
+*Responsive mobile layout optimized for smaller screens.*
+
+
 ---
 
 ## 🎯 Key Highlights

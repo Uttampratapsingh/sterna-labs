@@ -23,9 +23,10 @@ import { ARIA_LABELS } from "@/constants";
 
 interface TokenCardProps {
   token: Token;
+  priority?: boolean;
 }
 
-export const TokenCard = memo(({ token }: TokenCardProps) => {
+export const TokenCard = memo(({ token, priority = false }: TokenCardProps) => {
   const marketData = useSelector((state: RootState) => state.market.prices[token.id]);
   const { copyToClipboard } = useCopyToClipboard();
   const [priceFlash, setPriceFlash] = useState<'up' | 'down' | null>(null);
@@ -90,8 +91,9 @@ export const TokenCard = memo(({ token }: TokenCardProps) => {
               <TokenImage 
                 src={token.image} 
                 alt={token.name}
-              size="md"
-            />
+                size="md"
+                priority={priority}
+              />
 
             {/* Token Info */}
             <div className="flex-1 min-w-0">

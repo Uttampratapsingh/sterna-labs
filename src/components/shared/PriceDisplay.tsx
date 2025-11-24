@@ -17,7 +17,7 @@ const SIZE_CLASSES = {
 export const PriceDisplay = memo(
   ({ price, label, className, size = "md" }: PriceDisplayProps) => {
     return (
-      <div className={cn("text-right", className)}>
+      <div className="text-right">
         {label && (
           <div className="text-xs font-medium text-muted-foreground">
             {label}
@@ -26,7 +26,8 @@ export const PriceDisplay = memo(
         <div
           className={cn(
             "text-primary font-bold font-mono transition-colors duration-300",
-            SIZE_CLASSES[size]
+            SIZE_CLASSES[size],
+            className
           )}
           role="status"
           aria-label={`${label || "Price"}: ${price}`}

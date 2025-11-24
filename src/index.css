@@ -172,4 +172,52 @@ All colors MUST be HSL.
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
+
+  /* Flash animations for price changes */
+  @keyframes flash-green {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: hsl(var(--success) / 0.2); }
+  }
+
+  @keyframes flash-red {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: hsl(var(--danger) / 0.2); }
+  }
+
+  .animate-flash-green {
+    animation: flash-green 1s ease-in-out;
+  }
+
+  .animate-flash-red {
+    animation: flash-red 1s ease-in-out;
+  }
+
+  /* Text color flash animations for price digits */
+  @keyframes text-flash-green {
+    0%, 100% { color: inherit; }
+    50% { color: hsl(var(--success)); }
+  }
+
+  @keyframes text-flash-red {
+    0%, 100% { color: inherit; }
+    50% { color: hsl(var(--danger)); }
+  }
+
+  .animate-text-flash-green {
+    animation: text-flash-green 1s ease-in-out;
+  }
+
+  .animate-text-flash-red {
+    animation: text-flash-red 1s ease-in-out;
+  }
+
+  /* Shimmer animation for skeleton loaders */
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
 }

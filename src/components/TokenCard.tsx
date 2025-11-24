@@ -1,10 +1,11 @@
 import { Copy, ExternalLink, Search, Users, Heart, MessageCircle } from "lucide-react";
 import { Token } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
+import { usePrevious } from "@/hooks/usePrevious";
 import { 
   ProtocolBadge, 
   ChangeIndicator, 
@@ -17,6 +18,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { TokenDetailsModal } from "@/components/TokenDetailsModal";
 import { ARIA_LABELS } from "@/constants";
 
 interface TokenCardProps {
@@ -26,11 +28,32 @@ interface TokenCardProps {
 export const TokenCard = memo(({ token }: TokenCardProps) => {
   const marketData = useSelector((state: RootState) => state.market.prices[token.id]);
   const { copyToClipboard } = useCopyToClipboard();
+  const [priceFlash, setPriceFlash] = useState<'up' | 'down' | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const displayPrice = marketData?.price || token.price;
   const displayChange1h = marketData?.change1h ?? token.change1h;
   const displayChange5m = marketData?.change5m ?? token.change5m;
   const displayChange6h = marketData?.change6h ?? token.change6h;
+
+  const prevPrice = usePrevious(displayPrice);
+
+  // Smooth color transition effect when price changes
+  useEffect(() => {
+    if (prevPrice && prevPrice !== displayPrice) {
+      const prevNum = parseFloat(prevPrice.replace(/[^0-9.]/g, ''));
+      const currentNum = parseFloat(displayPrice.replace(/[^0-9.]/g, ''));
+      
+      if (currentNum > prevNum) {
+        setPriceFlash('up');
+      } else if (currentNum < prevNum) {
+        setPriceFlash('down');
+      }
+      
+      const timer = setTimeout(() => setPriceFlash(null), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [displayPrice, prevPrice]);
 
   const handleCopyAddress = async () => {
     const success = await copyToClipboard(token.id);
@@ -46,19 +69,27 @@ export const TokenCard = memo(({ token }: TokenCardProps) => {
     return "text-muted-foreground";
   };
 
+  const getPriceFlashClass = () => {
+    if (priceFlash === 'up') return 'animate-text-flash-green';
+    if (priceFlash === 'down') return 'animate-text-flash-red';
+    return '';
+  };
+
   return (
-    <HoverCard>
-      <HoverCardTrigger asChild>
-        <div 
-          className="group relative bg-card border border-border rounded-lg p-4 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 cursor-pointer"
-          role="article"
-          aria-label={`Token: ${token.name} (${token.symbol})`}
-        >
-          <div className="flex gap-3">
-            {/* Token Image */}
-            <TokenImage 
-              src={token.image} 
-              alt={token.name}
+    <>
+      <HoverCard>
+        <HoverCardTrigger asChild>
+          <div 
+            className="group relative bg-card border border-border rounded-lg p-4 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 cursor-pointer"
+            role="article"
+            aria-label={`Token: ${token.name} (${token.symbol})`}
+            onClick={() => setIsModalOpen(true)}
+          >
+            <div className="flex gap-3">
+              {/* Token Image */}
+              <TokenImage 
+                src={token.image} 
+                alt={token.name}
               size="md"
             />
 
@@ -96,6 +127,7 @@ export const TokenCard = memo(({ token }: TokenCardProps) => {
                   price={displayPrice}
                   label="Price"
                   size="md"
+                  className={getPriceFlashClass()}
                 />
               </div>
 
@@ -165,6 +197,13 @@ export const TokenCard = memo(({ token }: TokenCardProps) => {
         </div>
       </HoverCardContent>
     </HoverCard>
+
+    <TokenDetailsModal 
+      token={token} 
+      open={isModalOpen} 
+      onOpenChange={setIsModalOpen} 
+    />
+  </>
   );
 });
 TokenCard.displayName = "TokenCard";

@@ -38,16 +38,16 @@ export const Navigation = memo(() => {
 
   return (
     <nav className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+      <div className="px-4">
+        <div className="flex items-center justify-between h-14 lg:h-16">
           {/* Logo */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-2 lg:gap-8">
             <div className="flex items-center gap-2">
-              <Mountain className="w-8 h-8 text-primary" />
+              <Mountain className="w-6 h-6 lg:w-8 lg:h-8 text-primary" />
             </div>
             
-            {/* Nav Items */}
-            <div className="hidden md:flex items-center gap-1" role="navigation" aria-label="Main navigation">
+            {/* Nav Items - Desktop only */}
+            <div className="hidden xl:flex items-center gap-1" role="navigation" aria-label="Main navigation">
               {navItems.map((item) => (
                 <button
                   key={item.label}
@@ -65,22 +65,24 @@ export const Navigation = memo(() => {
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 lg:gap-3">
+            {/* Hide some items on mobile */}
             <Button 
               variant="ghost" 
               size="icon" 
-              className="text-muted-foreground hover:text-foreground"
+              className="hidden sm:flex text-muted-foreground hover:text-foreground h-9 w-9 lg:h-10 lg:w-10"
               aria-label="Search"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-4 h-4 lg:w-5 lg:h-5" />
             </Button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-primary">≡</span>
-                    <span>SOL</span>
+                <Button variant="outline" className="gap-1.5 lg:gap-2 h-9 lg:h-10 text-sm">
+                  <div className="flex items-center gap-1.5 lg:gap-2">
+                    <span className="text-primary text-xs lg:text-sm">≡</span>
+                    <span className="hidden sm:inline">SOL</span>
+                    <span className="sm:hidden">0</span>
                   </div>
                 </Button>
               </DropdownMenuTrigger>
@@ -91,14 +93,33 @@ export const Navigation = memo(() => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground glow-primary">
+            {/* Show globe icon on mobile instead of Deposit */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-1.5 lg:gap-2 h-9 lg:h-10 text-sm">
+                  <div className="flex items-center gap-1.5 lg:gap-2">
+                    <span className="text-primary text-xs lg:text-sm">🌐</span>
+                    <span className="hidden sm:inline">0</span>
+                    <span className="sm:hidden">0</span>
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-popover border-border">
+                <DropdownMenuItem>English</DropdownMenuItem>
+                <DropdownMenuItem>Spanish</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button 
+              className="hidden lg:flex bg-primary hover:bg-primary/90 text-primary-foreground glow-primary h-10"
+            >
               Deposit
             </Button>
 
             <Button 
               variant="ghost" 
               size="icon" 
-              className="text-muted-foreground hover:text-foreground"
+              className="hidden lg:flex text-muted-foreground hover:text-foreground h-10 w-10"
               aria-label="Notifications"
             >
               <Bell className="w-5 h-5" />
@@ -107,17 +128,46 @@ export const Navigation = memo(() => {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="text-muted-foreground hover:text-foreground"
+              className="hidden lg:flex text-muted-foreground hover:text-foreground h-10 w-10"
               aria-label="Wallet"
             >
               <Wallet className="w-5 h-5" />
+            </Button>
+
+            {/* Mobile: Show only essential buttons */}
+            <Button 
+              className="lg:hidden bg-primary/10 hover:bg-primary/20 text-primary h-9 px-3 text-sm font-medium"
+            >
+              Paste CA
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-foreground h-9 w-9 lg:h-10 lg:w-10"
+              aria-label="Search"
+            >
+              <Search className="w-4 h-4 lg:w-5 lg:h-5" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-foreground h-9 w-9 lg:h-10 lg:w-10 lg:hidden"
+              aria-label="Menu"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
             </Button>
 
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="text-muted-foreground hover:text-foreground"
+              className="hidden lg:flex text-muted-foreground hover:text-foreground h-10 w-10"
               aria-label="Toggle theme"
             >
               <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

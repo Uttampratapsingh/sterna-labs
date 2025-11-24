@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ARIA_LABELS } from "@/constants";
 
 interface TokenColumnProps {
   title: string;
@@ -36,9 +37,12 @@ export const TokenColumn = ({ title, tokens, category }: TokenColumnProps) => {
   } = useTokenFilter(tokens);
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-background">
+    <section 
+      className="flex flex-col h-full min-h-0 bg-background"
+      aria-label={`${title} token list`}
+    >
       {/* Column Header */}
-      <div className="flex-shrink-0 px-4 py-3 border-b border-border bg-card/50">
+      <header className="flex-shrink-0 px-4 py-3 border-b border-border bg-card/50">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold">{title}</h2>
           
@@ -49,6 +53,7 @@ export const TokenColumn = ({ title, tokens, category }: TokenColumnProps) => {
                   variant="ghost"
                   size="icon"
                   className="text-muted-foreground hover:text-foreground h-8 w-8"
+                  aria-label={ARIA_LABELS.FILTER_TOKENS}
                 >
                   <SlidersHorizontal className="w-4 h-4" />
                 </Button>
@@ -69,19 +74,20 @@ export const TokenColumn = ({ title, tokens, category }: TokenColumnProps) => {
           </div>
         </div>
         
-        <div className="flex items-center justify-between text-sm">
+        <nav className="flex items-center justify-between text-sm" aria-label="Token sorting options">
           <div className="flex items-center gap-3">
             <button
               onClick={() => handleSort("mc")}
               className={`flex items-center gap-1 transition-colors ${
                 sortBy === "mc" ? "text-primary" : "text-muted-foreground hover:text-foreground"
               }`}
+              aria-label="Flash indicator"
             >
               <Zap className="w-4 h-4" />
               <span>0</span>
             </button>
             
-            <div className="flex items-center gap-1 text-muted-foreground">
+            <div className="flex items-center gap-1 text-muted-foreground" aria-label="Protocol indicators">
               <span className="text-primary">≡</span>
               <span>P1</span>
               <span>P2</span>
@@ -95,6 +101,8 @@ export const TokenColumn = ({ title, tokens, category }: TokenColumnProps) => {
               className={`px-2 py-1 text-xs rounded transition-colors ${
                 sortBy === "mc" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
               }`}
+              aria-label={ARIA_LABELS.SORT_BY_MC}
+              aria-pressed={sortBy === "mc"}
             >
               MC
             </button>
@@ -103,6 +111,8 @@ export const TokenColumn = ({ title, tokens, category }: TokenColumnProps) => {
               className={`px-2 py-1 text-xs rounded transition-colors ${
                 sortBy === "age" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
               }`}
+              aria-label={ARIA_LABELS.SORT_BY_AGE}
+              aria-pressed={sortBy === "age"}
             >
               Age
             </button>
@@ -111,6 +121,8 @@ export const TokenColumn = ({ title, tokens, category }: TokenColumnProps) => {
               className={`px-2 py-1 text-xs rounded transition-colors ${
                 sortBy === "volume" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
               }`}
+              aria-label={ARIA_LABELS.SORT_BY_VOLUME}
+              aria-pressed={sortBy === "volume"}
             >
               Vol
             </button>
@@ -119,31 +131,45 @@ export const TokenColumn = ({ title, tokens, category }: TokenColumnProps) => {
               className={`px-2 py-1 text-xs rounded transition-colors ${
                 sortBy === "change" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
               }`}
+              aria-label={ARIA_LABELS.SORT_BY_CHANGE}
+              aria-pressed={sortBy === "change"}
             >
               Δ%
             </button>
-            <button className="text-muted-foreground hover:text-foreground transition-colors">
+            <button 
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Toggle sort direction"
+            >
               <ArrowUpDown className="w-4 h-4" />
             </button>
           </div>
-        </div>
-      </div>
+        </nav>
+      </header>
 
       {/* Scrollable Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3">
-        <div className="space-y-3 pb-4">
+      <div 
+        className="flex-1 min-h-0 overflow-y-auto px-4 py-3"
+        role="feed"
+        aria-busy={isLoading}
+        aria-label={`${title} tokens`}
+      >
+        <div className="space-y-3 pb-4" style={{ contentVisibility: "auto" }}>
           {isLoading
             ? Array.from({ length: 5 }).map((_, i) => <TokenCardSkeleton key={i} />)
             : filteredAndSortedTokens.map((token) => (
                 <TokenCard key={token.id} token={token} />
               ))}
           {!isLoading && filteredAndSortedTokens.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
+            <div 
+              className="text-center py-8 text-muted-foreground"
+              role="status"
+              aria-live="polite"
+            >
               No tokens found
             </div>
           )}
         </div>
       </div>
-    </div>
+    </section>
   );
 };

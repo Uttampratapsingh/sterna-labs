@@ -1,21 +1,23 @@
 import { Copy, ExternalLink, Search, Users, Heart, MessageCircle } from "lucide-react";
 import { Token } from "@/lib/types";
-import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { memo } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
+import { 
+  ProtocolBadge, 
+  ChangeIndicator, 
+  PriceDisplay, 
+  IconButton, 
+  TokenImage 
+} from "@/components/shared";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { ARIA_LABELS } from "@/constants";
 
 interface TokenCardProps {
   token: Token;
@@ -23,9 +25,20 @@ interface TokenCardProps {
 
 export const TokenCard = memo(({ token }: TokenCardProps) => {
   const marketData = useSelector((state: RootState) => state.market.prices[token.id]);
+  const { copyToClipboard } = useCopyToClipboard();
   
   const displayPrice = marketData?.price || token.price;
-  const displayChange1h = marketData?.change1h || token.change1h;
+  const displayChange1h = marketData?.change1h ?? token.change1h;
+  const displayChange5m = marketData?.change5m ?? token.change5m;
+  const displayChange6h = marketData?.change6h ?? token.change6h;
+
+  const handleCopyAddress = async () => {
+    const success = await copyToClipboard(token.id);
+    if (success) {
+      // Could add toast notification here
+      console.log("Address copied!");
+    }
+  };
 
   const getPriceColor = (change: number) => {
     if (change > 0) return "text-success";
@@ -36,21 +49,18 @@ export const TokenCard = memo(({ token }: TokenCardProps) => {
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <div className="group relative bg-card border border-border rounded-lg p-4 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 cursor-pointer">
+        <div 
+          className="group relative bg-card border border-border rounded-lg p-4 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 cursor-pointer"
+          role="article"
+          aria-label={`Token: ${token.name} (${token.symbol})`}
+        >
           <div className="flex gap-3">
             {/* Token Image */}
-            <div className="relative flex-shrink-0">
-              <div className="w-16 h-16 rounded-lg overflow-hidden border border-border bg-muted">
-                <img 
-                  src={token.image} 
-                  alt={token.name}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-success rounded-full border-2 border-card"></div>
-            </div>
+            <TokenImage 
+              src={token.image} 
+              alt={token.name}
+              size="md"
+            />
 
             {/* Token Info */}
             <div className="flex-1 min-w-0">
@@ -60,36 +70,37 @@ export const TokenCard = memo(({ token }: TokenCardProps) => {
                     {token.name} 
                     <span className="text-muted-foreground ml-2">{token.symbol}</span>
                   </h3>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
                     <span className="text-xs text-muted-foreground">{token.age}</span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Button variant="ghost" size="icon" className="h-5 w-5">
-                            <Copy className="h-3 w-3" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-popover border-border">
-                          Copy address
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <Button variant="ghost" size="icon" className="h-5 w-5">
-                      <ExternalLink className="h-3 w-3" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-5 w-5">
-                      <Search className="h-3 w-3" />
-                    </Button>
+                    <ProtocolBadge protocol={token.protocol} />
+                    <IconButton
+                      icon={<Copy className="h-3 w-3" />}
+                      onClick={handleCopyAddress}
+                      tooltip="Copy address"
+                      ariaLabel={ARIA_LABELS.COPY_ADDRESS}
+                    />
+                    <IconButton
+                      icon={<ExternalLink className="h-3 w-3" />}
+                      tooltip="Open in external site"
+                      ariaLabel={ARIA_LABELS.OPEN_EXTERNAL}
+                    />
+                    <IconButton
+                      icon={<Search className="h-3 w-3" />}
+                      tooltip="Search for token"
+                      ariaLabel={ARIA_LABELS.SEARCH_TOKEN}
+                    />
                   </div>
                 </div>
 
-                <div className="text-right flex-shrink-0">
-                  <div className="text-sm font-medium text-muted-foreground">Price</div>
-                  <div className="text-primary font-bold font-mono transition-colors duration-300">{displayPrice}</div>
-                  <div className="text-xs text-muted-foreground mt-1">MC</div>
-                  <div className="text-xs font-mono">{token.marketCap}</div>
-                </div>
+                <PriceDisplay 
+                  price={displayPrice}
+                  label="Price"
+                  size="md"
+                />
               </div>
+
+              <div className="text-xs text-muted-foreground mt-1">MC</div>
+              <div className="text-xs font-mono">{token.marketCap}</div>
 
               {/* Metrics Row */}
               <div className="flex items-center gap-3 text-xs mt-3">
@@ -110,27 +121,10 @@ export const TokenCard = memo(({ token }: TokenCardProps) => {
               </div>
 
               {/* Price Changes */}
-              <div className="flex items-center gap-4 mt-3 text-xs">
-                <div className="flex items-center gap-1">
-                  <span className="text-muted-foreground">5m:</span>
-                  <span className={cn("font-mono font-medium", getPriceColor(token.change5m))}>
-                    {token.change5m > 0 ? "+" : ""}{token.change5m}%
-                  </span>
-                </div>
-                
-                <div className="flex items-center gap-1">
-                  <span className="text-muted-foreground">1h:</span>
-                  <span className={cn("font-mono font-medium transition-colors duration-300", getPriceColor(displayChange1h))}>
-                    {displayChange1h > 0 ? "+" : ""}{displayChange1h}%
-                  </span>
-                </div>
-                
-                <div className="flex items-center gap-1">
-                  <span className="text-muted-foreground">6h:</span>
-                  <span className={cn("font-mono font-medium", getPriceColor(token.change6h))}>
-                    {token.change6h > 0 ? "+" : ""}{token.change6h}%
-                  </span>
-                </div>
+              <div className="flex items-center gap-4 mt-3">
+                <ChangeIndicator value={displayChange5m} label="5m" />
+                <ChangeIndicator value={displayChange1h} label="1h" />
+                <ChangeIndicator value={displayChange6h} label="6h" />
               </div>
 
               {/* Bottom Stats */}

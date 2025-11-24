@@ -1,6 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Token } from "@/lib/types";
 import { parseCurrencyValue, parseAgeToSeconds } from "@/lib/utils";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 export type SortOption = "mc" | "age" | "volume" | "change";
 export type SortDirection = "asc" | "desc";
@@ -13,14 +15,17 @@ export function useTokenFilter(tokens: Token[]) {
   const [minMC, setMinMC] = useState("");
   const [maxMC, setMaxMC] = useState("");
 
-  const handleSort = (option: SortOption) => {
-    if (sortBy === option) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(option);
-      setSortDirection("desc");
-    }
-  };
+  const marketPrices = useSelector((state: RootState) => state.market.prices);
+
+  const handleSort = useCallback((option: SortOption) => {
+    setSortBy((prevSortBy) => {
+      const newDirection = prevSortBy === option 
+        ? (sortDirection === "asc" ? "desc" : "asc")
+        : "desc";
+      setSortDirection(newDirection);
+      return option;
+    });
+  }, [sortDirection]);
 
   const filteredAndSortedTokens = useMemo(() => {
     let filtered = [...tokens];
@@ -37,12 +42,19 @@ export function useTokenFilter(tokens: Token[]) {
       );
     }
 
+    // Filter by protocols
+    if (selectedProtocols.length > 0) {
+      filtered = filtered.filter((token) =>
+        selectedProtocols.includes(token.protocol)
+      );
+    }
+
     // Filter by market cap range
     if (minMC || maxMC) {
       filtered = filtered.filter((token) => {
         const mc = parseCurrencyValue(token.marketCap);
-        const min = minMC ? parseFloat(minMC) : 0;
-        const max = maxMC ? parseFloat(maxMC) : Infinity;
+        const min = minMC ? parseCurrencyValue(minMC) : 0;
+        const max = maxMC ? parseCurrencyValue(maxMC) : Infinity;
         return mc >= min && mc <= max;
       });
     }
@@ -50,6 +62,11 @@ export function useTokenFilter(tokens: Token[]) {
     // Sort
     filtered.sort((a, b) => {
       let aVal: number, bVal: number;
+
+      const getChange = (t: Token) => {
+        const live = marketPrices[t.id];
+        return live ? live.change1h : t.change1h;
+      };
 
       switch (sortBy) {
         case "mc":
@@ -65,8 +82,8 @@ export function useTokenFilter(tokens: Token[]) {
           bVal = parseAgeToSeconds(b.age);
           break;
         case "change":
-          aVal = a.change1h;
-          bVal = b.change1h;
+          aVal = getChange(a);
+          bVal = getChange(b);
           break;
         default:
           return 0;
@@ -76,7 +93,7 @@ export function useTokenFilter(tokens: Token[]) {
     });
 
     return filtered;
-  }, [tokens, sortBy, sortDirection, searchKeywords, minMC, maxMC]);
+  }, [tokens, sortBy, sortDirection, searchKeywords, selectedProtocols, minMC, maxMC, sortBy === "change" ? marketPrices : null]);
 
   return {
     sortBy,

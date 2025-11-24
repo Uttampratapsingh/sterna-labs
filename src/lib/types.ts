@@ -17,4 +17,5 @@ export interface Token {
   dexScore: string;
   fdv: string;
   transactions: number;
+  protocol: "Pump" | "Mayhem" | "Moonshot" | "Daos.fun" | "Jupiter";
 }

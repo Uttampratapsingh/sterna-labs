@@ -100,20 +100,23 @@ export const ColumnFilters = ({
         <Label className="text-xs text-muted-foreground">Market Cap Range</Label>
         <div className="grid grid-cols-2 gap-2">
           <Input
-            placeholder="Min ($K)"
+            placeholder="Min (e.g. 1000)"
             value={minMC}
             onChange={(e) => setMinMC(e.target.value)}
-            type="number"
+            type="text"
             className="h-8 text-sm bg-muted border-border"
           />
           <Input
-            placeholder="Max ($K)"
+            placeholder="Max (e.g. 50000)"
             value={maxMC}
             onChange={(e) => setMaxMC(e.target.value)}
-            type="number"
+            type="text"
             className="h-8 text-sm bg-muted border-border"
           />
         </div>
+        <p className="text-[10px] text-muted-foreground">
+          Enter values in dollars (e.g., 1000 for $1K, 1000000 for $1M)
+        </p>
       </div>
 
       {/* Active Filters Summary */}

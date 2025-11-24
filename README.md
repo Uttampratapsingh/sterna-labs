@@ -1,7 +1,7 @@
 # Token Trading Dashboard
 
 A high-performance, responsive cryptocurrency token tracking dashboard built with modern web technologies. This application provides real-time-like monitoring of token pairs across different lifecycle stages ("New Pairs", "Final Stretch", "Migrated").
-Live link : [Vite](https://sterna-labs.vercel.app)
+Live link : [Token Trading Table](https://sterna-labs.vercel.app)
 
 ## 🚀 Tech Stack
 

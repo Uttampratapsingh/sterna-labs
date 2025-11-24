@@ -7,6 +7,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { Provider } from "react-redux";
 import { store } from "@/store";
 import { mockWebSocket } from "@/services/mockWebSocket";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -21,6 +22,23 @@ const queryClient = new QueryClient({
   },
 });
 
+/**
+ * Loading fallback component with accessibility
+ */
+const LoadingFallback = () => (
+  <div 
+    className="flex items-center justify-center h-screen"
+    role="status"
+    aria-live="polite"
+    aria-label="Loading application"
+  >
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+      <p className="text-muted-foreground">Loading...</p>
+    </div>
+  </div>
+);
+
 const AppContent = () => {
   useEffect(() => {
     mockWebSocket.connect();
@@ -29,27 +47,31 @@ const AppContent = () => {
 
   return (
     <BrowserRouter>
-      <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 };
 
 const App = () => (
-  <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <AppContent />
-      </TooltipProvider>
-    </QueryClientProvider>
-  </Provider>
+  <ErrorBoundary>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <AppContent />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </Provider>
+  </ErrorBoundary>
 );
 
 export default App;

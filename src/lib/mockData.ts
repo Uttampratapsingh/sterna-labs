@@ -1,5 +1,13 @@
 import { Token } from "./types";
 
+const protocols: Array<"Pump" | "Mayhem" | "Moonshot" | "Daos.fun" | "Jupiter"> = [
+  "Pump",
+  "Mayhem",
+  "Moonshot",
+  "Daos.fun",
+  "Jupiter",
+];
+
 const generateMockToken = (
   id: string,
   name: string,
@@ -26,6 +34,7 @@ const generateMockToken = (
   dexScore: `${Math.floor(Math.random() * 5)}mo`,
   fdv: `0.${Math.floor(Math.random() * 9)}`,
   transactions: Math.floor(Math.random() * 1000),
+  protocol: protocols[Math.floor(Math.random() * protocols.length)],
 });
 
 export const mockTokens = {

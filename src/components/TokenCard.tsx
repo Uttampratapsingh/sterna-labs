@@ -3,6 +3,8 @@ import { Token } from "@/lib/types";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { memo } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 import {
   HoverCard,
   HoverCardContent,
@@ -20,6 +22,11 @@ interface TokenCardProps {
 }
 
 export const TokenCard = memo(({ token }: TokenCardProps) => {
+  const marketData = useSelector((state: RootState) => state.market.prices[token.id]);
+  
+  const displayPrice = marketData?.price || token.price;
+  const displayChange1h = marketData?.change1h || token.change1h;
+
   const getPriceColor = (change: number) => {
     if (change > 0) return "text-success";
     if (change < 0) return "text-danger";
@@ -37,6 +44,8 @@ export const TokenCard = memo(({ token }: TokenCardProps) => {
                 <img 
                   src={token.image} 
                   alt={token.name}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -75,10 +84,10 @@ export const TokenCard = memo(({ token }: TokenCardProps) => {
                 </div>
 
                 <div className="text-right flex-shrink-0">
-                  <div className="text-sm font-medium text-muted-foreground">MC</div>
-                  <div className="text-primary font-bold font-mono">{token.marketCap}</div>
-                  <div className="text-xs text-muted-foreground mt-1">V</div>
-                  <div className="text-xs font-mono">{token.volume}</div>
+                  <div className="text-sm font-medium text-muted-foreground">Price</div>
+                  <div className="text-primary font-bold font-mono transition-colors duration-300">{displayPrice}</div>
+                  <div className="text-xs text-muted-foreground mt-1">MC</div>
+                  <div className="text-xs font-mono">{token.marketCap}</div>
                 </div>
               </div>
 
@@ -111,8 +120,8 @@ export const TokenCard = memo(({ token }: TokenCardProps) => {
                 
                 <div className="flex items-center gap-1">
                   <span className="text-muted-foreground">1h:</span>
-                  <span className={cn("font-mono font-medium", getPriceColor(token.change1h))}>
-                    {token.change1h > 0 ? "+" : ""}{token.change1h}%
+                  <span className={cn("font-mono font-medium transition-colors duration-300", getPriceColor(displayChange1h))}>
+                    {displayChange1h > 0 ? "+" : ""}{displayChange1h}%
                   </span>
                 </div>
                 

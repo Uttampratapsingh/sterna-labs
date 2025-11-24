@@ -2,6 +2,7 @@ import { Copy, ExternalLink, Search, Users, Heart, MessageCircle } from "lucide-
 import { Token } from "@/lib/types";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 import {
   HoverCard,
   HoverCardContent,
@@ -18,7 +19,7 @@ interface TokenCardProps {
   token: Token;
 }
 
-export const TokenCard = ({ token }: TokenCardProps) => {
+export const TokenCard = memo(({ token }: TokenCardProps) => {
   const getPriceColor = (change: number) => {
     if (change > 0) return "text-success";
     if (change < 0) return "text-danger";
@@ -162,4 +163,5 @@ export const TokenCard = ({ token }: TokenCardProps) => {
       </HoverCardContent>
     </HoverCard>
   );
-};
+});
+TokenCard.displayName = "TokenCard";

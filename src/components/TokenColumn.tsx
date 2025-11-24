@@ -3,8 +3,9 @@ import { TokenCard } from "./TokenCard";
 import { TokenCardSkeleton } from "./TokenCardSkeleton";
 import { ColumnFilters } from "./ColumnFilters";
 import { Token } from "@/lib/types";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
+import { useTokenFilter } from "@/hooks/useTokenFilter";
 import {
   Popover,
   PopoverContent,
@@ -17,92 +18,22 @@ interface TokenColumnProps {
   category: "new" | "final" | "migrated";
 }
 
-type SortOption = "mc" | "age" | "volume" | "change";
-
 export const TokenColumn = ({ title, tokens, category }: TokenColumnProps) => {
   const [isLoading] = useState(false);
-  const [sortBy, setSortBy] = useState<SortOption>("mc");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [searchKeywords, setSearchKeywords] = useState("");
-  const [selectedProtocols, setSelectedProtocols] = useState<string[]>([]);
-  const [minMC, setMinMC] = useState("");
-  const [maxMC, setMaxMC] = useState("");
-
-  const handleSort = (option: SortOption) => {
-    if (sortBy === option) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(option);
-      setSortDirection("desc");
-    }
-  };
-
-  const filteredAndSortedTokens = useMemo(() => {
-    let filtered = [...tokens];
-
-    // Filter by search keywords
-    if (searchKeywords) {
-      const keywords = searchKeywords.toLowerCase().split(",").map(k => k.trim());
-      filtered = filtered.filter(token =>
-        keywords.some(keyword =>
-          token.name.toLowerCase().includes(keyword) ||
-          token.symbol.toLowerCase().includes(keyword)
-        )
-      );
-    }
-
-    // Filter by market cap range
-    if (minMC || maxMC) {
-      filtered = filtered.filter(token => {
-        const mc = parseFloat(token.marketCap.replace(/[$KM]/g, "")) * 
-                   (token.marketCap.includes("K") ? 1000 : token.marketCap.includes("M") ? 1000000 : 1);
-        const min = minMC ? parseFloat(minMC) : 0;
-        const max = maxMC ? parseFloat(maxMC) : Infinity;
-        return mc >= min && mc <= max;
-      });
-    }
-
-    // Sort
-    filtered.sort((a, b) => {
-      let aVal: number, bVal: number;
-
-      switch (sortBy) {
-        case "mc":
-          aVal = parseFloat(a.marketCap.replace(/[$KM]/g, "")) * 
-                (a.marketCap.includes("K") ? 1000 : a.marketCap.includes("M") ? 1000000 : 1);
-          bVal = parseFloat(b.marketCap.replace(/[$KM]/g, "")) * 
-                (b.marketCap.includes("K") ? 1000 : b.marketCap.includes("M") ? 1000000 : 1);
-          break;
-        case "volume":
-          aVal = parseFloat(a.volume.replace(/[$KM]/g, "")) * 
-                (a.volume.includes("K") ? 1000 : a.volume.includes("M") ? 1000000 : 1);
-          bVal = parseFloat(b.volume.replace(/[$KM]/g, "")) * 
-                (b.volume.includes("K") ? 1000 : b.volume.includes("M") ? 1000000 : 1);
-          break;
-        case "age":
-          const ageToSeconds = (age: string) => {
-            const num = parseInt(age);
-            if (age.includes("s")) return num;
-            if (age.includes("m")) return num * 60;
-            if (age.includes("h")) return num * 3600;
-            return num;
-          };
-          aVal = ageToSeconds(a.age);
-          bVal = ageToSeconds(b.age);
-          break;
-        case "change":
-          aVal = a.change1h;
-          bVal = b.change1h;
-          break;
-        default:
-          return 0;
-      }
-
-      return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
-    });
-
-    return filtered;
-  }, [tokens, sortBy, sortDirection, searchKeywords, minMC, maxMC]);
+  
+  const {
+    sortBy,
+    searchKeywords,
+    setSearchKeywords,
+    selectedProtocols,
+    setSelectedProtocols,
+    minMC,
+    setMinMC,
+    maxMC,
+    setMaxMC,
+    handleSort,
+    filteredAndSortedTokens,
+  } = useTokenFilter(tokens);
 
   return (
     <div className="flex flex-col h-full min-h-0 bg-background">
